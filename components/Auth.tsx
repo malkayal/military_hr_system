@@ -19,7 +19,9 @@ const getLockout = (): LockoutState => {
   try {
     const raw = localStorage.getItem(LOCKOUT_KEY);
     if (raw) return JSON.parse(raw);
-  } catch {}
+  } catch (err) {
+    console.error('Error reading lockout state:', err);
+  }
   return { attempts: 0, lockedUntil: null };
 };
 
@@ -95,7 +97,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         setError(msg);
         showToast(msg, 'error');
       }
-    } catch {
+    } catch (err) {
+      console.error('Login error:', err);
       const msg = 'حدث خطأ أثناء محاولة الدخول. يرجى المحاولة مجدداً.';
       setError(msg);
       showToast(msg, 'error');
