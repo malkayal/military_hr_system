@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DCMI - منظومة إدارة شئون الأفراد</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              accent: 'var(--accent-color)',
+              'accent-hover': 'var(--accent-hover)',
+            }
+          }
+        }
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --accent-color: #4f46e5;
+        --accent-hover: #4338ca;
+      }
+      body {
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+      }
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #444;
+      }
+      /* Dynamic Accent Utilities */
+      .bg-accent { background-color: var(--accent-color); }
+      .text-accent { color: var(--accent-color); }
+      .border-accent { border-color: var(--accent-color); }
+      .hover\:bg-accent-hover:hover { background-color: var(--accent-hover); }
+      .ring-accent:focus { --tw-ring-color: var(--accent-color); }
+
+      @media print {
+        .no-print { display: none !important; }
+        .print-only { display: block !important; }
+        @page { size: auto; margin: 0; }
+        body { background: white; }
+      }
+
+      @keyframes bell-ring {
+        0%, 100% { transform: rotate(0deg); }
+        10% { transform: rotate(15deg); }
+        20% { transform: rotate(-10deg); }
+        30% { transform: rotate(5deg); }
+        40% { transform: rotate(-5deg); }
+        50% { transform: rotate(0deg); }
+      }
+    </style>
+  <link rel="stylesheet" href="/index.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "recharts": "https://esm.sh/recharts@^3.6.0",
+        "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+        "xlsx": "https://esm.sh/xlsx@0.18.5",
+        "qrcode": "https://esm.sh/qrcode@1.5.3",
+        "jsbarcode": "https://esm.sh/jsbarcode@3.11.5",
+        "@google/genai": "https://esm.sh/@google/genai@^1.38.0"
+      }
+    }
+    </script>
+  <script type="module" crossorigin src="/assets/index-Vr2ql7pF.js"></script>
+</head>
+  <body class="bg-gray-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div id="root"></div>
+</body>
+</html>
