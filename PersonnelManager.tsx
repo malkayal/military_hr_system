@@ -95,10 +95,9 @@ const PersonnelManager: React.FC<PersonnelManagerProps> = ({ currentUser }) => {
     );
   };
 
-  const handleBulkStatusChange = useCallback(async (status: Personnel['status']) => {
+  const handleBulkStatusChange = useCallback((status: Personnel['status']) => {
     if (selectedIds.size === 0) return;
-    const ok = window.confirm(`هل أنت متأكد من تغيير حالة ${selectedIds.size} فرد إلى [${status}]؟`);
-    if (ok) {
+    if (window.confirm(`ظ‡ظ„ ط£ظ†طھ ظ…طھط£ظƒط¯ ظ…ظ† طھط؛ظٹظٹط± ط­ط§ظ„ط© ${selectedIds.size} ظپط±ط¯ ط¥ظ„ظ‰ [${status}]طں`)) {
       const updated = personnel.map(p => selectedIds.has(p.id) ? { ...p, status } : p);
       setPersonnel(updated);
       storage.setPersonnel(updated);
@@ -106,17 +105,15 @@ const PersonnelManager: React.FC<PersonnelManagerProps> = ({ currentUser }) => {
       storage.addLog({
         userId: currentUser.id,
         username: currentUser.username,
-        action: 'تعديل حالة جماعي',
-        details: `تم تغيير حالة ${selectedIds.size} فرد إلى ${status}`
+        action: 'طھط¹ط¯ظٹظ„ ط­ط§ظ„ط© ط¬ظ…ط§ط¹ظٹ',
+        details: `طھظ… طھط؛ظٹظٹط± ط­ط§ظ„ط© ${selectedIds.size} ظپط±ط¯ ط¥ظ„ظ‰ ${status}`
       });
-      showToast(`تم تغيير حالة ${selectedIds.size} فرد بنجاح`, 'success');
     }
-  }, [selectedIds, personnel, currentUser, showToast]);
+  }, [selectedIds, personnel, currentUser]);
 
-  const handleBulkDelete = useCallback(async () => {
+  const handleBulkDelete = useCallback(() => {
     if (selectedIds.size === 0) return;
-    const ok = window.confirm(`تحذير: هل أنت متأكد من حذف ${selectedIds.size} سجل نهائياً؟`);
-    if (ok) {
+    if (window.confirm(`طھط­ط°ظٹط±: ظ‡ظ„ ط£ظ†طھ ظ…طھط£ظƒط¯ ظ…ظ† ط­ط°ظپ ${selectedIds.size} ط³ط¬ظ„ ظ†ظ‡ط§ط¦ظٹط§ظ‹طں`)) {
       const updated = personnel.filter(p => !selectedIds.has(p.id));
       setPersonnel(updated);
       storage.setPersonnel(updated);
@@ -124,12 +121,11 @@ const PersonnelManager: React.FC<PersonnelManagerProps> = ({ currentUser }) => {
       storage.addLog({
         userId: currentUser.id,
         username: currentUser.username,
-        action: 'حذف جماعي',
-        details: `تم حذف ${selectedIds.size} سجل من المنظومة.`
+        action: 'ط­ط°ظپ ط¬ظ…ط§ط¹ظٹ',
+        details: `طھظ… ط­ط°ظپ ${selectedIds.size} ط³ط¬ظ„ ظ…ظ† ط§ظ„ظ…ظ†ط¸ظˆظ…ط©.`
       });
-      showToast(`تم حذف ${selectedIds.size} سجل بنجاح`, 'success');
     }
-  }, [selectedIds, personnel, currentUser, showToast]);
+  }, [selectedIds, personnel, currentUser]);
 
   const stats = useMemo(() => {
     let active = 0, retired = 0, military = 0, civilian = 0, eligibleForPromotion = 0;
@@ -243,10 +239,20 @@ const PersonnelManager: React.FC<PersonnelManagerProps> = ({ currentUser }) => {
     'مقاس الحذاء', 'نوع الفرد', 'مؤهل علمي', 'تخصص', 'تاريخ الميلاد'
   ];
 
-  // Method 1: Download as XLSX using Data URI (most browser-compatible)
+  // Method 1: Download as XLSX template
   const handleDownloadTemplate = useCallback(() => {
     try {
-   // Method 2: Download as CSV with UTF-8 BOM (guaranteed to open in Excel with Arabic)
+      const ws = XLSX.utils.aoa_to_sheet([TEMPLATE_HEADERS]);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Template');
+      XLSX.writeFile(wb, 'HR_Import_Template.xlsx');
+    } catch (error) {
+      console.error('XLSX template download error:', error);
+      showToast('فشل تنزيل ملف القالب. يرجى المحاولة مرة أخرى.', 'error');
+    }
+  }, [showToast]);
+
+  // Method 2: Download as CSV with UTF-8 BOM (guaranteed to open in Excel with Arabic)
   const handleDownloadTemplateCSV = useCallback(() => {
     try {
       const bom = '\uFEFF';
@@ -389,43 +395,6 @@ const PersonnelManager: React.FC<PersonnelManagerProps> = ({ currentUser }) => {
     reader.readAsBinaryString(file);
     e.target.value = '';
   }, [personnel, departments, sections, settings, currentUser, showToast]);
-��ظ„ظپ ط§ظƒط³ظ„.',
-              timestamp: new Date().toISOString()
-            }],
-            gear: [],
-            documents: [],
-            commendations: [],
-            disciplinaryRecords: [],
-            customData: {}
-          };
-
-          newPersonnel.push(person);
-          imported++;
-        });
-
-        if (newPersonnel.length > 0) {
-          const updated = [...newPersonnel, ...personnel];
-          setPersonnel(updated);
-          storage.setPersonnel(updated);
-          storage.addLog({
-            userId: currentUser.id,
-            username: currentUser.username,
-            action: 'ط§ط³طھظٹط±ط§ط¯ ط¬ظ…ط§ط¹ظٹ ظ…ظ† ط§ظƒط³ظ„',
-            details: `طھظ… ط§ط³طھظٹط±ط§ط¯ ${imported} ظپط±ط¯ ط¨ظ†ط¬ط§ط­طŒ ظˆطھط®ط·ظٹ ${skipped} ط³ط¬ظ„ (طھظƒط±ط§ط± ط£ظˆ ظ†ظ‚طµ ط¨ظٹط§ظ†ط§طھ)`
-          });
-          showToast(`تم الاستيراد بنجاح! عدد الناجحين: ${imported}، تم تخطي: ${skipped}`, 'success');
-        } else {
-          showToast(`لم يتم استيراد أي بيانات. تم تخطي ${skipped} سجل بسبب أخطاء أو تكرار.`, 'warning');
-        }
-
-      } catch (err) {
-        console.error(err);
-        showToast('حدث خطأ أثناء قراءة الملف. تأكد من استخدام القالب الصحيح.', 'error');
-      }
-    };
-    reader.readAsBinaryString(file);
-    e.target.value = ''; // Reset input
-  }, [personnel, departments, sections, settings, currentUser, showToast]);
 
   const handleExportExcel = useCallback(() => {
     const data = filteredList.map(p => ({
@@ -449,8 +418,7 @@ const PersonnelManager: React.FC<PersonnelManagerProps> = ({ currentUser }) => {
     // Validation
     if (formData.idType === 'national') {
       if (formData.nationalId.length !== 12) {
-        const msg = formData.nationalId.length < 12 ? 'الرقم الوطني أقل من الحد (12 رقماً)' : 'الرقم الوطني فوق الحد (12 رقماً)';
-        showToast(msg, 'error');
+        showToast(formData.nationalId.length < 12 ? "الرقم أقل من الحد (12 رقماً)" : "الرقم فوق الحد (12 رقماً)", 'error');
         return;
       }
     }
@@ -460,7 +428,6 @@ const PersonnelManager: React.FC<PersonnelManagerProps> = ({ currentUser }) => {
       showToast('رقم الهوية موجود مسبقاً في قاعدة البيانات، يرجى التحقق من الرقم.', 'error');
       return;
     }
-
     // Uniqueness check for military number
     if (formData.hasMilitaryNumber && formData.militaryNumber && formData.militaryNumber !== 'بلا') {
       if (!storage.isMilitaryNumberUnique(formData.militaryNumber, editingPerson?.id)) {
@@ -527,8 +494,8 @@ const PersonnelManager: React.FC<PersonnelManagerProps> = ({ currentUser }) => {
       action: editingPerson ? 'تعديل بيانات فرد' : 'إضافة فرد جديد',
       details: `${editingPerson ? 'تعديل' : 'إضافة'} الفرد: ${formData.name} (${formData.rank})`
     });
-    showToast(editingPerson ? `تم تحديث بيانات ${formData.name} بنجاح` : `تمت إضافة ${formData.name} للمنظومة بنجاح`, 'success');
 
+    showToast(editingPerson ? `تم تحديث بيانات ${formData.name} بنجاح` : `تمت إضافة ${formData.name} للمنظومة بنجاح`, 'success');
     setIsModalOpen(false);
     setEditingPerson(null);
   };
