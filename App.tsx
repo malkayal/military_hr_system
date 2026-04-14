@@ -16,6 +16,8 @@ import FormsManager from './components/FormsManager';
 import PromotionsManager from './components/PromotionsManager';
 import { CheckCircle2, AlertOctagon, Menu } from 'lucide-react';
 import ErrorBoundary from './components/ErrorBoundary';
+import { ToastProvider } from './Toast';
+import { ConfirmDialogProvider } from './ConfirmDialog';
 
 import { MAIN_TABS } from './constants/tabs';
 
@@ -202,4 +204,12 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+const AppWithProviders: React.FC = () => (
+  <ToastProvider>
+    <ConfirmDialogProvider>
+      <App />
+    </ConfirmDialogProvider>
+  </ToastProvider>
+);
+
+export default AppWithProviders;

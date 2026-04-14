@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { storage } from '../utils/storage';
 import { comparePassword } from '../utils/auth';
 import { SystemSettings, User, AppError, Announcement } from '../types';
+import { useToast } from './Toast';
+import { useConfirm } from './ConfirmDialog';
 import { 
   Palette, Trophy, FileText, Lock, UsersRound, 
   ShieldAlert, Save, Trash2,
@@ -52,6 +54,9 @@ const SettingsManager: React.FC<SettingsManagerProps> = ({ currentUser, onSettin
   const fileInputRef = useRef<HTMLInputElement>(null);
   const backupInputRef = useRef<HTMLInputElement>(null);
 
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
+
   useEffect(() => {
     if (activeTab === 'errors') setErrorLogs(storage.getErrors());
   }, [activeTab]);
@@ -59,7 +64,7 @@ const SettingsManager: React.FC<SettingsManagerProps> = ({ currentUser, onSettin
   const handleSaveSettings = () => {
     storage.setSettings(sysSettings);
     onSettingsUpdate();
-    alert("تم حفظ وتحديث كافة الإعدادات والبروتوكولات بنجاح ✅");
+    showToast('تم حفظ وتحديث كافة الإعدادات والبروتوكولات بنجاح', 'success');
     // إعادة تحميل خفيفة لتطبيق الثيم والألوان
     const root = document.documentElement;
     root.style.setProperty('--accent-color', sysSettings.accentColor);
@@ -110,23 +115,37 @@ const SettingsManager: React.FC<SettingsManagerProps> = ({ currentUser, onSettin
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const jsonStr = event.target?.result as string;
-        if (confirm('تحذير: استيراد البيانات سيقوم باستبدال كافة البيانات الحالية. هل أنت متأكد؟')) {
+        const confirmed = await confirm({
+          title: 'تحذير: استعادة البيانات',
+          message: 'استيراد البيانات سيقوم باستبدال كافة البيانات الحالية. هل أنت متأكد من المتابعة؟',
+          confirmText: 'نعم، استعادة البيانات',
+          cancelText: 'إلغاء',
+          variant: 'warning',
+        });
+        if (confirmed) {
           storage.importBackup(jsonStr);
-          alert('تمت استعادة البيانات بنجاح! سيتم إعادة تشغيل المنظومة الآن.');
-          window.location.reload();
+          showToast('تمت استعادة البيانات بنجاح! سيتم إعادة تشغيل المنظومة الآن.', 'success');
+          setTimeout(() => window.location.reload(), 1500);
         }
       } catch {
-        alert('خطأ: الملف المرفوع غير صالح أو تالف.');
+        showToast('خطأ: الملف المرفوع غير صالح أو تالف.', 'error');
       }
     };
     reader.readAsText(file);
   };
 
   const factoryReset = async () => {
-    if (confirm('خطر: سيتم مسح كافة البيانات والعودة لضبط المصنع. لا يمكن التراجع عن هذا الإجراء!')) {
+    const confirmed = await confirm({
+      title: 'تحذير: إعادة ضبط المصنع',
+      message: 'خطر: سيتم مسح كافة البيانات والعودة لضبط المصنع. لا يمكن التراجع عن هذا الإجراء!',
+      confirmText: 'مسح كل البيانات',
+      cancelText: 'إلغاء',
+      variant: 'danger',
+    });
+    if (confirmed) {
       const password = prompt('يرجى إدخال كلمة سر المدير للتأكيد:');
       if (password) {
         const isMatch = await comparePassword(password, currentUser.password || '');
@@ -136,7 +155,7 @@ const SettingsManager: React.FC<SettingsManagerProps> = ({ currentUser, onSettin
           return;
         }
       }
-      alert('كلمة السر غير صحيحة.');
+      showToast('كلمة السر غير صحيحة.', 'error');
     }
   };
 
@@ -401,13 +420,13 @@ const SettingsManager: React.FC<SettingsManagerProps> = ({ currentUser, onSettin
                      <div className="md:col-span-2 pt-4">
                         <button 
                           disabled={isTestingApi}
-                          onClick={() => {
-                             setIsTestingApi(true);
-                             setTimeout(() => {
-                                setIsTestingApi(false);
-                                alert('تم فحص الاتصال بنجاح! الاستجابة: 200 OK');
-                             }, 1500);
-                          }}
+                           onClick={() => {
+                              setIsTestingApi(true);
+                              setTimeout(() => {
+                                 setIsTestingApi(false);
+                                 showToast('تم فحص الاتصال بنجاح! الاستجابة: 200 OK', 'success');
+                              }, 1500);
+                           }}
                           className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-emerald-700 transition-all disabled:opacity-50"
                         >
                            {isTestingApi ? <RefreshCcw className="animate-spin" size={20}/> : <Zap size={20}/>}
@@ -662,7 +681,7 @@ const SettingsManager: React.FC<SettingsManagerProps> = ({ currentUser, onSettin
                       </div>
                    </div>
                    <div className="flex gap-4">
-                      <button onClick={() => { if(confirm('مسح سجلات العمليات؟')) { localStorage.removeItem('mil_hr_logs'); alert('تم التطهير'); }}} className="px-8 py-4 bg-white dark:bg-slate-900 text-red-600 rounded-2xl font-black text-xs border border-red-200">مسح السجلات</button>
+                       <button onClick={async () => { const ok = await confirm({ title: 'مسح السجلات', message: 'هل أنت متأكد من مسح سجلات العمليات؟', confirmText: 'مسح', variant: 'warning' }); if (ok) { localStorage.removeItem('mil_hr_logs'); showToast('تم مسح السجلات بنجاح', 'success'); }}} className="px-8 py-4 bg-white dark:bg-slate-900 text-red-600 rounded-2xl font-black text-xs border border-red-200">مسح السجلات</button>
                       <button onClick={factoryReset} className="px-8 py-4 bg-red-600 text-white rounded-2xl font-black text-xs shadow-xl shadow-red-600/20 hover:bg-red-700 transition-all">إعادة ضبط المصنع</button>
                    </div>
                 </div>

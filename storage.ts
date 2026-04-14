@@ -144,6 +144,16 @@ export const storage = {
     return parsed;
   },
   setPersonnel: (data: Personnel[]) => setToStorage(KEYS.PERSONNEL, data),
+
+  isNationalIdUnique: (nationalId: string, excludeId?: string): boolean => {
+    const personnel = storage.getPersonnel();
+    return !personnel.some(p => p.nationalId === nationalId && p.id !== excludeId);
+  },
+
+  isMilitaryNumberUnique: (militaryNumber: string, excludeId?: string): boolean => {
+    const personnel = storage.getPersonnel();
+    return !personnel.some(p => p.hasMilitaryNumber && p.militaryNumber === militaryNumber && p.id !== excludeId);
+  },
   
   getDepartments: (): Department[] => {
     const cached = cache[KEYS.DEPARTMENTS];
@@ -239,19 +249,33 @@ export const storage = {
     storage.setAttendance([...newRecords, ...filtered]);
   },
   
-  getCurrentUser: (): User | null => getFromStorage(KEYS.CURRENT_USER, null),
+  getCurrentUser: (): User | null => {
+    if (cache[KEYS.CURRENT_USER]) return cache[KEYS.CURRENT_USER];
+    const data = sessionStorage.getItem(KEYS.CURRENT_USER);
+    if (!data) return null;
+    try {
+      const parsed = JSON.parse(data);
+      cache[KEYS.CURRENT_USER] = parsed;
+      return parsed;
+    } catch {
+      return null;
+    }
+  },
   setCurrentUser: (user: User | null) => {
     if (user) {
       const { password: _, ...safeUser } = user;
-      setToStorage(KEYS.CURRENT_USER, safeUser);
+      cache[KEYS.CURRENT_USER] = safeUser;
+      sessionStorage.setItem(KEYS.CURRENT_USER, JSON.stringify(safeUser));
     } else {
-      setToStorage(KEYS.CURRENT_USER, null);
+      delete cache[KEYS.CURRENT_USER];
+      sessionStorage.removeItem(KEYS.CURRENT_USER);
     }
   },
   clearSession: () => {
     delete cache[KEYS.CURRENT_USER];
     delete cache[KEYS.SESSION];
-    localStorage.removeItem(KEYS.CURRENT_USER);
+    sessionStorage.removeItem(KEYS.CURRENT_USER);
+    sessionStorage.removeItem(KEYS.SESSION);
     localStorage.removeItem(KEYS.SESSION);
   },
 

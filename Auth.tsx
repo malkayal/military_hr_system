@@ -4,6 +4,7 @@ import { storage } from '../utils/storage';
 import { comparePassword } from '../utils/auth';
 import { Lock, User as UserIcon, ShieldAlert } from 'lucide-react';
 import { User } from '../types';
+import { useToast } from './Toast';
 
 const LOCKOUT_KEY = 'mil_hr_lockout';
 const MAX_ATTEMPTS = 5;
@@ -36,6 +37,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [error, setError] = useState('');
   const [lockoutRemaining, setLockoutRemaining] = useState<number>(0);
   const settings = storage.getSettings();
+  const { showToast } = useToast();
 
   useEffect(() => {
     const tick = () => {
@@ -86,12 +88,17 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         setLockout({ attempts: newAttempts, lockedUntil });
         setLockoutRemaining(Math.ceil(LOCKOUT_DURATION_MS / 1000));
         setError('');
+        showToast('تم تعليق الحساب مؤقتاً بسبب محاولات دخول متعددة فاشلة', 'error');
       } else {
         setLockout({ attempts: newAttempts, lockedUntil: null });
-        setError(`خطأ في اسم المستخدم أو كلمة السر! (محاولة ${newAttempts} من ${MAX_ATTEMPTS})`);
+        const msg = `خطأ في اسم المستخدم أو كلمة السر! (محاولة ${newAttempts} من ${MAX_ATTEMPTS})`;
+        setError(msg);
+        showToast(msg, 'error');
       }
     } catch {
-      setError('حدث خطأ أثناء محاولة الدخول. يرجى المحاولة مجدداً.');
+      const msg = 'حدث خطأ أثناء محاولة الدخول. يرجى المحاولة مجدداً.';
+      setError(msg);
+      showToast(msg, 'error');
     }
   };
 
