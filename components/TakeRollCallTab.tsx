@@ -8,7 +8,7 @@ import {
   PlusCircle, FilePlus2, Save, X, ChevronRight, User as UserIcon,
   TrendingUp, CheckCircle, XCircle, Briefcase, Clock
 } from 'lucide-react';
-import { Personnel, Department, Section, AttendanceStatus, AttendanceRecord, User, WorkSchedule } from '../../types';
+import { Personnel, Department, Section, AttendanceStatus, AttendanceRecord, User, WorkSchedule } from '../types';
 
 interface TakeRollCallTabProps {
   personnel: Personnel[];

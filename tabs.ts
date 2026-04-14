@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, CalendarClock, ClipboardList, 
   FileBadge, FileSpreadsheet, ShieldAlert, Settings 
 } from 'lucide-react';
-import { UserRole } from '../types';
+import { UserRole } from './types';
 
 export interface TabConfig {
   id: 'dashboard' | 'personnel' | 'leaves' | 'roll_call' | 'promotions' | 'reports' | 'admin' | 'settings' | 'forms';

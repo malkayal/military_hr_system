@@ -8,10 +8,10 @@ import {
 } from 'lucide-react';
 
 // Sub-components
-import SchedulesTab from './roll-call/SchedulesTab';
-import TakeRollCallTab from './roll-call/TakeRollCallTab';
-import ArchiveTab from './roll-call/ArchiveTab';
-import DroppedTab from './roll-call/DroppedTab';
+import SchedulesTab from './SchedulesTab';
+import TakeRollCallTab from './TakeRollCallTab';
+import ArchiveTab from './ArchiveTab';
+import DroppedTab from './DroppedTab';
 
 interface DailyRollCallProps {
   currentUser: User;

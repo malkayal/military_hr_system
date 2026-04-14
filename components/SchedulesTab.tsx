@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Timer, PlusCircle, Calendar, Edit2, Trash2, X, Sun, Moon 
 } from 'lucide-react';
-import { storage } from '../../utils/storage';
-import { WorkSchedule, ScheduleType, Department, Section } from '../../types';
+import { storage } from '../utils/storage';
+import { WorkSchedule, ScheduleType, Department, Section } from '../types';
 
 interface SchedulesTabProps {
   workSchedules: WorkSchedule[];

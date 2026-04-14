@@ -3,8 +3,8 @@ import React, { useState, useMemo } from 'react';
 import { 
   History, RotateCcw, AlertCircle, TrendingUp, Save, CheckCircle, XCircle, Clock, Briefcase, Search, User as UserIcon
 } from 'lucide-react';
-import { AttendanceStatus, Personnel } from '../../types';
-import { storage } from '../../utils/storage';
+import { AttendanceStatus, Personnel } from '../types';
+import { storage } from '../utils/storage';
 
 interface ArchiveTabProps {
   tempStatuses: Record<string, AttendanceStatus>;

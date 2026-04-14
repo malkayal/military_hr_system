@@ -2,7 +2,7 @@ import React from 'react';
 import { UserRole, SystemSettings, User } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, UsersRound, X } from 'lucide-react';
-import { MAIN_TABS, TabConfig } from '../constants/tabs';
+import { MAIN_TABS, TabConfig } from '../tabs';
 
 interface SidebarProps {
   activeTab: string;

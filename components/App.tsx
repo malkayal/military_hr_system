@@ -1,25 +1,25 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { User, SystemSettings, UserRole } from './types';
-import { storage } from './utils/storage';
+import { User, SystemSettings, UserRole } from '../types';
+import { storage } from '../utils/storage';
 import { motion, AnimatePresence } from 'framer-motion';
-import Login from './components/Auth';
-import Sidebar from './components/Sidebar';
-import Dashboard from './components/Dashboard';
-import PersonnelManager from './components/PersonnelManager';
-import LeavesManager from './components/LeavesManager';
-import DailyRollCall from './components/DailyRollCall';
-import AdminManager from './components/AdminManager';
-import ReportsManager from './components/ReportsManager';
-import SettingsManager from './components/SettingsManager';
-import FormsManager from './components/FormsManager';
-import PromotionsManager from './components/PromotionsManager';
+import Login from './Auth';
+import Sidebar from './Sidebar';
+import Dashboard from './Dashboard';
+import PersonnelManager from './PersonnelManager';
+import LeavesManager from './LeavesManager';
+import DailyRollCall from './DailyRollCall';
+import AdminManager from './AdminManager';
+import ReportsManager from './ReportsManager';
+import SettingsManager from './SettingsManager';
+import FormsManager from './FormsManager';
+import PromotionsManager from './PromotionsManager';
 import { CheckCircle2, AlertOctagon, Menu } from 'lucide-react';
-import ErrorBoundary from './components/ErrorBoundary';
+import ErrorBoundary from './ErrorBoundary';
 import { ToastProvider } from './Toast';
 import { ConfirmDialogProvider } from './ConfirmDialog';
 
-import { MAIN_TABS } from './constants/tabs';
+import { MAIN_TABS } from '../tabs';
 
 /**
  * المكون الرئيسي للتطبيق (Root Component)

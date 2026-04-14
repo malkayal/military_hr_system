@@ -4,7 +4,7 @@ import {
   AlertOctagon, Settings, ShieldAlert, Users, 
   Search, ExternalLink, User as UserIcon
 } from 'lucide-react';
-import { Personnel, SystemSettings } from '../../types';
+import { Personnel, SystemSettings } from '../types';
 
 interface DroppedTabProps {
   personnel: Personnel[];
