@@ -15,6 +15,7 @@ import SettingsManager from './components/SettingsManager';
 import FormsManager from './components/FormsManager';
 import PromotionsManager from './components/PromotionsManager';
 import { CheckCircle2, AlertOctagon, Menu } from 'lucide-react';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import { MAIN_TABS } from './constants/tabs';
 
@@ -40,7 +41,7 @@ const App: React.FC = () => {
 
   const handleLogout = () => {
     setCurrentUser(null);
-    storage.setCurrentUser(null);
+    storage.clearSession();
   };
 
   const handleSettingsUpdate = () => {
@@ -184,15 +185,15 @@ const App: React.FC = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              {activeTab === 'dashboard' && <Dashboard onNavigate={handleTabChange} />}
-              {activeTab === 'personnel' && <PersonnelManager currentUser={currentUser} />}
-              {activeTab === 'leaves' && <LeavesManager currentUser={currentUser} />}
-              {activeTab === 'roll_call' && <DailyRollCall currentUser={currentUser} />}
-              {activeTab === 'promotions' && <PromotionsManager currentUser={currentUser} />}
-              {activeTab === 'forms' && <FormsManager currentUser={currentUser} />}
-              {activeTab === 'reports' && <ReportsManager currentUser={currentUser} />}
-              {activeTab === 'admin' && <AdminManager currentUser={currentUser} onSettingsUpdate={handleSettingsUpdate} />}
-              {activeTab === 'settings' && <SettingsManager currentUser={currentUser} onSettingsUpdate={handleSettingsUpdate} />}
+              {activeTab === 'dashboard' && <ErrorBoundary><Dashboard onNavigate={handleTabChange} /></ErrorBoundary>}
+              {activeTab === 'personnel' && <ErrorBoundary><PersonnelManager currentUser={currentUser} /></ErrorBoundary>}
+              {activeTab === 'leaves' && <ErrorBoundary><LeavesManager currentUser={currentUser} /></ErrorBoundary>}
+              {activeTab === 'roll_call' && <ErrorBoundary><DailyRollCall currentUser={currentUser} /></ErrorBoundary>}
+              {activeTab === 'promotions' && <ErrorBoundary><PromotionsManager currentUser={currentUser} /></ErrorBoundary>}
+              {activeTab === 'forms' && <ErrorBoundary><FormsManager currentUser={currentUser} /></ErrorBoundary>}
+              {activeTab === 'reports' && <ErrorBoundary><ReportsManager currentUser={currentUser} /></ErrorBoundary>}
+              {activeTab === 'admin' && <ErrorBoundary><AdminManager currentUser={currentUser} onSettingsUpdate={handleSettingsUpdate} /></ErrorBoundary>}
+              {activeTab === 'settings' && <ErrorBoundary><SettingsManager currentUser={currentUser} onSettingsUpdate={handleSettingsUpdate} /></ErrorBoundary>}
             </motion.div>
           </AnimatePresence>
         </div>

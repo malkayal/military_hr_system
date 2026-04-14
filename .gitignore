@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Dev/debug artifacts - not part of the project
+prompt_*.json
+recover_file.py
+repair_file.ps1

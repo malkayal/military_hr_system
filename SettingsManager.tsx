@@ -88,29 +88,21 @@ const SettingsManager: React.FC<SettingsManagerProps> = ({ currentUser, onSettin
   };
 
   // --- وظائف الأرشفة والنسخ الاحتياطي ---
-  
+
   const exportFullBackup = () => {
-    const allData = {
-      personnel: storage.getPersonnel(),
-      departments: storage.getDepartments(),
-      sections: storage.getSections(),
-      users: storage.getUsers(),
-      leaves: storage.getLeaves(),
-      attendance: storage.getAttendance(),
-      settings: storage.getSettings(),
-      timestamp: new Date().toISOString()
-    };
-    const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' });
+    const jsonStr = storage.exportBackup();
+    const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `DCMI_FULL_BACKUP_${new Date().toISOString().split('T')[0]}.json`;
     link.click();
+    URL.revokeObjectURL(url);
     storage.addLog({
       userId: currentUser.id,
       username: currentUser.username,
       action: 'تصدير نسخة احتياطية',
-      details: 'تم استخراج نسخة شاملة لكافة بيانات المنظومة.'
+      details: 'تم استخراج نسخة شاملة لكافة بيانات المنظومة (بدون كلمات المرور).'
     });
   };
 
@@ -120,16 +112,9 @@ const SettingsManager: React.FC<SettingsManagerProps> = ({ currentUser, onSettin
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        const data = JSON.parse(event.target?.result as string);
+        const jsonStr = event.target?.result as string;
         if (confirm('تحذير: استيراد البيانات سيقوم باستبدال كافة البيانات الحالية. هل أنت متأكد؟')) {
-          if (data.personnel) storage.setPersonnel(data.personnel);
-          if (data.departments) storage.setDepartments(data.departments);
-          if (data.sections) storage.setSections(data.sections);
-          if (data.users) storage.setUsers(data.users);
-          if (data.leaves) storage.setLeaves(data.leaves);
-          if (data.attendance) storage.setAttendance(data.attendance);
-          if (data.settings) storage.setSettings(data.settings);
-          
+          storage.importBackup(jsonStr);
           alert('تمت استعادة البيانات بنجاح! سيتم إعادة تشغيل المنظومة الآن.');
           window.location.reload();
         }

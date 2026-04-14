@@ -129,11 +129,15 @@ export const storage = {
     
     const data = localStorage.getItem(KEYS.PERSONNEL);
     if (!data || JSON.parse(data).length === 0) {
-      const depts = storage.getDepartments();
-      const sections = storage.getSections();
-      const mock = generateMockPersonnel(depts, sections);
-      setToStorage(KEYS.PERSONNEL, mock);
-      return mock;
+      const settings = storage.getSettings();
+      if (settings.devMode) {
+        const depts = storage.getDepartments();
+        const sections = storage.getSections();
+        const mock = generateMockPersonnel(depts, sections);
+        setToStorage(KEYS.PERSONNEL, mock);
+        return mock;
+      }
+      return [];
     }
     const parsed = JSON.parse(data);
     cache[KEYS.PERSONNEL] = parsed;
@@ -236,7 +240,20 @@ export const storage = {
   },
   
   getCurrentUser: (): User | null => getFromStorage(KEYS.CURRENT_USER, null),
-  setCurrentUser: (user: User | null) => setToStorage(KEYS.CURRENT_USER, user),
+  setCurrentUser: (user: User | null) => {
+    if (user) {
+      const { password: _, ...safeUser } = user;
+      setToStorage(KEYS.CURRENT_USER, safeUser);
+    } else {
+      setToStorage(KEYS.CURRENT_USER, null);
+    }
+  },
+  clearSession: () => {
+    delete cache[KEYS.CURRENT_USER];
+    delete cache[KEYS.SESSION];
+    localStorage.removeItem(KEYS.CURRENT_USER);
+    localStorage.removeItem(KEYS.SESSION);
+  },
 
   getSettings: (): SystemSettings => {
     const cached = cache[KEYS.SETTINGS];
@@ -315,6 +332,42 @@ export const storage = {
 
   getSession: () => getFromStorage(KEYS.SESSION, null),
   setSession: (session: any) => setToStorage(KEYS.SESSION, session),
+
+  exportBackup: (): string => {
+    const personnel = storage.getPersonnel().map(p => {
+      const { ...rest } = p;
+      return rest;
+    });
+    const users = storage.getUsers().map(u => {
+      const { password: _, ...safeUser } = u;
+      return safeUser;
+    });
+    const allData = {
+      personnel,
+      departments: storage.getDepartments(),
+      sections: storage.getSections(),
+      users,
+      leaves: storage.getLeaves(),
+      attendance: storage.getAttendance(),
+      settings: storage.getSettings(),
+      timestamp: new Date().toISOString(),
+      version: '1.0'
+    };
+    return JSON.stringify(allData, null, 2);
+  },
+
+  importBackup: (jsonStr: string): void => {
+    const data = JSON.parse(jsonStr);
+    if (data.personnel) storage.setPersonnel(data.personnel);
+    if (data.departments) storage.setDepartments(data.departments);
+    if (data.sections) storage.setSections(data.sections);
+    if (data.users) storage.setUsers(data.users);
+    if (data.leaves) storage.setLeaves(data.leaves);
+    if (data.attendance) storage.setAttendance(data.attendance);
+    if (data.settings) storage.setSettings(data.settings);
+    // Clear all cache entries to force re-read
+    Object.keys(cache).forEach(k => delete cache[k]);
+  },
 
   getSystemSnapshot: () => {
     const personnel = storage.getPersonnel();
