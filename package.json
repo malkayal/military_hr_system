@@ -4,9 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"vite\"",
-    "server": "ts-node-esm server/index.ts",
+    "dev": "concurrently \"npm run server:dev\" \"vite\"",
+    "server": "node dist/index.js",
+    "server:dev": "tsx watch server/index.ts",
     "build": "vite build",
+    "build:server": "tsc -p server/tsconfig.json",
     "preview": "vite preview",
     "lint": "eslint .",
     "type-check": "tsc --noEmit"
@@ -17,6 +19,7 @@
     "better-sqlite3": "^12.9.0",
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
+    "express": "^4.21.2",
     "framer-motion": "^12.34.3",
     "jsbarcode": "3.11.5",
     "lucide-react": "^0.562.0",
@@ -44,6 +47,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.3.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.56.1",
     "vite": "^6.2.0"
